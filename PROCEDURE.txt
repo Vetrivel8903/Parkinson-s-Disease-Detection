@@ -1,6 +1,6 @@
 TO RUN THE PROJECT :
 
-1. OPEN POWER CELL
+1. OPEN POWER SHELL
 
 2. CHANGE DIRECTORY : cd "D:\Parkinson's Detection"
 
