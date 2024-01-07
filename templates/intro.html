@@ -1,0 +1,47 @@
+<!-- templates/intro.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('/static/other_background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+        }
+
+        #intro-section {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            color: #000000;
+            margin-top: 20%;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+    </style>
+    <title>Introduction</title>
+</head>
+<body>
+
+    <section id="intro-section">
+        <h2>Welcome to Parkinson's Detection App</h2>
+        <p>Redirecting to the Upload Page...</p>
+    </section>
+
+    <script>
+        // Redirect to the upload page after 3 seconds
+        setTimeout(function () {
+            window.location.href = '/upload';
+        }, 3000);
+    </script>
+
+</body>
+</html>

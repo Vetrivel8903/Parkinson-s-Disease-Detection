@@ -1,0 +1,79 @@
+<!-- templates/feature.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('/static/other_background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+        }
+
+        .result-container,
+        .prediction-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            color: #000000;
+            margin-top: 20px;
+        }
+
+        .result-container p {
+            margin: 10px;
+        }
+
+        .prediction-container label,
+        .prediction-container input {
+            display: block;
+            margin: 10px auto;
+        }
+
+        .prediction-container button {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+    <title>Parkinson's Detection Result</title>
+</head>
+
+<body>
+
+    <section class="result-container">
+        <h2>Result</h2>
+
+        <p>Feature Values:</p>
+        <ul>
+            {% for value in feature_values %}
+                <li>Feature {{ loop.index }}: {{ value }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Prediction:</h3>
+        {% if prediction == 1 %}
+            <p>Parkinson's Disease Detected</p>
+        {% else %}
+            <p>No Parkinson's Disease Detected</p>
+        {% endif %}
+    </section>
+
+    <section class="prediction-container">
+        <h2>Parkinson's Disease Prediction</h2>
+        <form id="prediction-form" action="/predict" method="post">
+            {% for i in range(1, 23) %}
+                <label for="feature{{ i }}">Feature {{ i }}:</label>
+                <input type="text" name="feature{{ i }}" value="{{ feature_values[i-1] }}" required><br>
+            {% endfor %}
+            <button type="submit">Predict</button>
+        </form>
+    </section>
+
+</body>
+
+</html>

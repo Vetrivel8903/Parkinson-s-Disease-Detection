@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: url('/static/other_background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .result-container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+ 
+         .feature_values {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            font: Times New Roman;
+            text-align: left;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+}
+        h2 {
+            color: #333;
+        }
+
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        p.prediction {
+            color: maroon;
+        }
+
+        p.result-message {
+            color: teal;
+        }
+
+        p.accuracy {
+            color: red;
+        }
+
+        #loading-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #loading-overlay img {
+            width: 370px;
+        }
+
+        #loading-text {
+            margin-top: 15px;
+            color: white;
+        }
+    </style>
+    <title>Parkinson's Disease Prediction Result</title>
+</head>
+<body>
+    <div id="loading-overlay">
+        <img src="{{ url_for('static', filename='Load.gif') }}" alt="Loading">
+        <h3 id="loading-text">Predicting Result Through XGBclassifier...</h3>
+    </div>
+
+    <div class="feature_values" id="feature_values">
+    <h3 style="text-align: center;" >Feature Values</h3>
+
+    <label for="feature1">MDVP:Fo(Hz):</label>
+    <input type="text" name="feature1" value="{{ feature_values[0] }}" required><br>
+
+    <label for="feature2">MDVP:Fhi(Hz):</label>
+    <input type="text" name="feature2" value="{{ feature_values[1] }}" required><br>
+
+    <label for="feature3">MDVP:Flo(Hz):</label>
+    <input type="text" name="feature3" value="{{ feature_values[2] }}" required><br>
+
+    <label for="feature4">MDVP:Jitter(%):</label>
+    <input type="text" name="feature4" value="{{ feature_values[3] }}" required><br>
+
+    <label for="feature5">MDVP:Jitter(Abs):</label>
+    <input type="text" name="feature5" value="{{ feature_values[4] }}" required><br>
+
+    <label for="feature6">MDVP:RAP:</label>
+    <input type="text" name="feature6" value="{{ feature_values[5] }}" required><br>
+
+    <label for="feature7">MDVP:PPQ:</label>
+    <input type="text" name="feature7" value="{{ feature_values[6] }}" required><br>
+
+    <label for="feature8">Jitter:DDP:</label>
+    <input type="text" name="feature8" value="{{ feature_values[7] }}" required><br>
+
+    <label for="feature9">MDVP:Shimmer:</label>
+    <input type="text" name="feature9" value="{{ feature_values[8] }}" required><br>
+
+    <label for="feature10">MDVP:Shimmer(dB):</label>
+    <input type="text" name="feature10" value="{{ feature_values[9] }}" required><br>
+
+    <label for="feature11">Shimmer:APQ3:</label>
+    <input type="text" name="feature11" value="{{ feature_values[10] }}" required><br>
+
+    <label for="feature12">Shimmer:APQ5:</label>
+    <input type="text" name="feature12" value="{{ feature_values[11] }}" required><br>
+
+    <label for="feature13">MDVP:APQ:</label>
+    <input type="text" name="feature13" value="{{ feature_values[12] }}" required><br>
+
+    <label for="feature14">Shimmer:DDA:</label>
+    <input type="text" name="feature14" value="{{ feature_values[13] }}" required><br>
+
+    <label for="feature15">NHR:</label>
+    <input type="text" name="feature15" value="{{ feature_values[14] }}" required><br>
+
+    <label for="feature16">HNR:</label>
+    <input type="text" name="feature16" value="{{ feature_values[15] }}" required><br>
+
+    <label for="feature17">RPDE:</label>
+    <input type="text" name="feature17" value="{{ feature_values[16] }}" required><br>
+
+    <label for="feature18">DFA:</label>
+    <input type="text" name="feature18" value="{{ feature_values[17] }}" required><br>
+
+    <label for="feature19">spread1:</label>
+    <input type="text" name="feature19" value="{{ feature_values[18] }}" required><br>
+
+    <label for="feature20">spread2:</label>
+    <input type="text" name="feature20" value="{{ feature_values[19] }}" required><br>
+
+    <label for="feature21">D2:</label>
+    <input type="text" name="feature21" value="{{ feature_values[20] }}" required><br>
+
+    <label for="feature22">PPE:</label>
+    <input type="text" name="feature22" value="{{ feature_values[21] }}" required><br>
+</div>
+
+
+    <div class="result-container" id="result-container" style="display: none;">
+        <h2>Parkinson's Disease Prediction Result</h2>
+        <p class="prediction">PREDICTION: {{ prediction }}</p>
+        <p class="result-message"> {{ result_message }}</p>
+        <p class="accuracy">ACCURACY OF THE MODEL: {{ accuracy }}%</p>
+    </div>
+
+    <script>
+    // Show feature values for 5 seconds
+    document.addEventListener('DOMContentLoaded', function () {
+        // Hide loading overlay initially
+        document.getElementById('loading-overlay').style.display = 'none';
+
+        setTimeout(function () {
+            // Hide feature values
+            document.getElementById('feature_values').style.display = 'none';
+
+            // Show loading overlay
+            document.getElementById('loading-overlay').style.display = 'flex';
+
+            // Simulate loading for 3 seconds
+            setTimeout(function () {
+                // Hide loading overlay
+                document.getElementById('loading-overlay').style.display = 'none';
+
+                // Show result container
+                document.getElementById('result-container').style.display = 'block';
+            }, 6000);
+        }, 5000);
+    });
+</script>
+</body>
+</html>

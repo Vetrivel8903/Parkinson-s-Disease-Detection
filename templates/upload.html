@@ -1,0 +1,86 @@
+<!-- templates/upload.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('/static/other_background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-container {
+            text-align:center;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            color: #000000;
+            width: 100%;
+        }
+
+        .upload-container label,
+        .upload-container input {
+            display: block;
+            margin: 10px auto;
+        }
+
+        .upload-container button {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+
+    <title>Upload Report</title>
+</head>
+<body>
+
+    <section id="upload-section" class="upload-container">
+        <h2>Upload The Report</h2>
+        <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+            <label for="dataset">Upload The Report:</label>
+            <input type="file" name="dataset" accept=".csv, .data" required><br>
+            <button type="submit">Upload</button>
+        </form>
+    </section>
+
+    <script>
+        $(document).ready(function () {
+            $('#upload-form').submit(function (event) {
+                event.preventDefault();
+                var formData = new FormData();
+                formData.append('dataset', $('input[type=file]')[0].files[0]);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/upload',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if ('error_message' in data) {
+                            alert(data['error_message']);
+                        } else {
+                            window.location.href = '/features?feature_values=' + data['feature_values'].join(',') + '&uploaded_df=' + encodeURIComponent(data['uploaded_df']);
+                            console.log('Feature Values:', data['feature_values']);
+                            console.log('Uploaded DataFrame:', data['uploaded_df']);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(error);
+                        alert('Error during file upload. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
