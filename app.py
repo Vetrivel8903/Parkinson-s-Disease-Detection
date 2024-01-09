@@ -18,7 +18,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 # Load the dataset
-df = pd.read_csv("C:/Users/vetri/Downloads/parkinsons/parkinsons.data")
+df = pd.read_csv("//Download the parkison data from online and paste that path directory here//")
 
 # Extract numeric columns
 numeric_columns = df.select_dtypes(include=[np.number]).columns
